@@ -1035,10 +1035,7 @@ def Cargar(self,tw,sql,Inicio,Final,Fec_Inicial,Fec_Final,Cod_Soc,Año):
         for fila in informacion:
             fila[1]=formatearFecha(fila[1])
             fila[2]=formatearFecha(fila[2])
-            sqlMonto="SELECT SUM(Cant_Mat_Serv*Precio_ref) FROM TAB_SOLP_002_Detalle_Solicitud_Pedido WHERE Cod_Soc='%s' AND Año='%s' AND Nro_Solp='%s'"%(Cod_Soc,Año,fila[0])
-            Monto=convlist(sqlMonto)
-            mont=formatearDecimal(Monto[0],'3')
-            fila.insert(6,mont)
+            fila[5]=formatearDecimal(fila[5],'2')
             col=0
             for i in fila:
                 item=QTableWidgetItem(i)

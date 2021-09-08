@@ -21,6 +21,9 @@ class Consultar(QMainWindow):
         self.pbRechazar.clicked.connect(self.Rechazar)
         self.pbSalir.clicked.connect(self.close)
 
+        # global dict_estadoPosicion
+        # dict_estadoPosicion = {}
+
     def datosGenerales(self, codSoc, empresa, usuario, Num_Solp):
         global Cod_Soc, Nom_Soc, Cod_Usuario, Año, Numero_Solp
 
@@ -89,23 +92,12 @@ class Consultar(QMainWindow):
         insertarDatos(self.cbSolicitante, data)
         self.cbSolicitante.setCurrentIndex(-1)
 
-        # sqlcabeceraSOLP='''SELECT b.Descrip_Tip_Solp, c.Descripción_Área, d.Nom_usuario, a.Fecha_Solp, a.Estado_Solp, e.Texto FROM TAB_SOLP_001_Cabecera_Solicitud_Pedido a LEFT JOIN `TAB_SOLP_003_Solicitud Pedido` b ON a.Tipo_solp=b.Tipo_Solp LEFT JOIN TAB_SOC_010_Áreas_de_la_empresa c ON a.Area_Solp=c.Cod_Área LEFT JOIN TAB_SOC_005_Usuarios d ON a.Cod_Soc=d.Cod_Soc AND a.Solicita_Solp=d.Cod_usuario LEFT JOIN TAB_SOC_019_Texto_Proceso e ON e.Cod_Soc=a.Cod_Soc AND e.Año=a.Año AND e.Tipo_Proceso='1' AND e.Nro_Doc=a.Nro_Solp AND e.Item_Doc='0' WHERE a.Cod_Soc='%s' AND a.Nro_Solp='%s' AND a.Año='%s';'''%(Cod_Soc,Numero_Solp,Año)
-        # listcabecera=convlist(sqlcabeceraSOLP)
-        # print(listcabecera)
-
         sqlcabeceraSOLP='''SELECT b.Descrip_Tip_Solp, c.Descripción_Área, d.Nom_usuario, a.Fecha_Solp, a.Estado_Solp, e.Texto, SUM(f.Cant_Mat_Serv*f.Precio_ref), g.Descrip_moneda FROM TAB_SOLP_001_Cabecera_Solicitud_Pedido a LEFT JOIN `TAB_SOLP_003_Solicitud Pedido` b ON a.Tipo_solp=b.Tipo_Solp LEFT JOIN TAB_SOC_010_Áreas_de_la_empresa c ON a.Area_Solp=c.Cod_Área LEFT JOIN TAB_SOC_005_Usuarios d ON a.Cod_Soc=d.Cod_Soc AND a.Solicita_Solp=d.Cod_usuario LEFT JOIN TAB_SOC_019_Texto_Proceso e ON e.Cod_Soc=a.Cod_Soc AND e.Año=a.Año AND e.Tipo_Proceso='1' AND e.Nro_Doc=a.Nro_Solp AND e.Item_Doc='0' LEFT JOIN TAB_SOLP_002_Detalle_Solicitud_Pedido f ON f.Cod_Soc=a.Cod_Soc AND f.Año=a.Año AND f.Nro_Solp=a.Nro_Solp AND f.Estado_Item!='4' LEFT JOIN TAB_SOC_008_Monedas g ON f.Moneda=g.Cod_moneda WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Nro_Solp='%s' GROUP BY a.Nro_Solp'''%(Cod_Soc, Año, Numero_Solp)
         listcabecera=convlist(sqlcabeceraSOLP)
-        print(listcabecera)
-
-        # sqlTextoCab="SELECT Texto FROM TAB_SOC_019_Texto_Proceso WHERE Cod_Soc='%s' and Año='%s' and Tipo_Proceso='1' and Nro_Doc='%s' and Item_Doc='0'"%(Cod_Soc,Año,Numero_Solp)
-        # listaTextoCab=convlist(sqlTextoCab)
 
         sqldetalleSOLP="SELECT a.Estado_Item,a.Item_Solp,a.Cod_Mat,c.Descrip_Mat,c.Uni_Base,k.Descrip_Marca,a.Cant_Mat_Serv,a.Precio_ref,a.Fecha_Requerimiento,d.Nom_Soc_Largo,e.Nomb_Planta,f.Nomb_Alm,g.Nom_usuario,h.Descripción_Área FROM TAB_SOLP_002_Detalle_Solicitud_Pedido a LEFT JOIN TAB_MAT_001_Catalogo_Materiales c ON a.Cod_Mat=c.Cod_Mat LEFT JOIN TAB_SOC_001_Sociedad d ON a.Cod_Soc=d.Cod_soc LEFT JOIN TAB_SOC_002_Planta e ON a.Cod_Soc=e.Cod_soc AND a.Centro=e.Cod_Planta LEFT JOIN TAB_SOC_003_Almacén f ON a.Cod_Soc=f.Cod_Soc AND a.Centro=f.Cod_Planta AND a.Almacen=f.Cod_Alm LEFT JOIN TAB_SOC_005_Usuarios g ON a.Cod_Soc=g.Cod_Soc AND a.Solicitante=g.Cod_usuario LEFT JOIN TAB_SOC_010_Áreas_de_la_empresa h ON a.Area_gestora=h.Cod_Área LEFT JOIN TAB_MAT_010_Marca_de_Producto k ON a.Cod_Mat=c.Cod_Mat AND c.Marca=k.Cod_Marca WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Nro_Solp='%s' ORDER BY a.Item_Solp;" %(Cod_Soc, Año, Numero_Solp)
-        # listdetalle=convlist(sqldetalleSOLP)
-        actualizarSOLP(self,self.tbwRegistro_SOLP,sqldetalleSOLP,estadosDoc,Cod_Soc,Numero_Solp,Año)
 
-        # sqlMonto="SELECT SUM(Cant_Mat_Serv*Precio_ref) FROM TAB_SOLP_002_Detalle_Solicitud_Pedido WHERE Cod_Soc='%s'and Nro_Solp='%s'and Año='%s' and Estado_Item!='4';"%(Cod_Soc,Numero_Solp,Año)
-        # listaMonto=convlist(sqlMonto)
+        actualizarSOLP(self,self.tbwRegistro_SOLP,sqldetalleSOLP,estadosDoc,Cod_Soc,Numero_Solp,Año)
 
         self.leNro_SOLP.setText(Numero_Solp)
         self.cbTipo_SOLP.setCurrentText(listcabecera[0])
@@ -122,16 +114,11 @@ class Consultar(QMainWindow):
             print('Sin texto Cabecera')
             # mensajeDialogo("informacion", "Informacion", "Texto de Cabecera no registrado. Verifique")
 
-        # monto=round(float(listaMonto[0]),2)
-        # monto="{:,.3f}".format(monto)
-        # self.leMonto_SOLP.setText(monto)
-        # self.leMonto_SOLP.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
 
-        monto=round(float(listcabecera[6]),2)
-        monto="{:,.3f}".format(monto)
+        monto=formatearDecimal(listcabecera[6],'2')
         self.leMonto_SOLP.setText(monto)
         self.leMonto_SOLP.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        
+
         self.cbMoneda.setCurrentText(listcabecera[7])
 
         self.leNro_SOLP.setEnabled(False)
