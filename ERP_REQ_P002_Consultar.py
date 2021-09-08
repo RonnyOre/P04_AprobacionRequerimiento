@@ -14,15 +14,15 @@ sqlMoneda="SELECT Descrip_moneda, Cod_moneda FROM TAB_SOC_008_Monedas"
 class Consultar(QMainWindow):
     def __init__(self):
         QMainWindow.__init__(self)
-        uic.loadUi("ERP_PSOLP_001.ui",self)
+        uic.loadUi("ERP_PSOLP_001_01.ui",self)
 
         self.pbGrabar.clicked.connect(self.Grabar)
         self.pbAprobar.clicked.connect(self.Aprobar)
         self.pbRechazar.clicked.connect(self.Rechazar)
         self.pbSalir.clicked.connect(self.close)
 
-        # global dict_estadoPosicion
-        # dict_estadoPosicion = {}
+        global dict_estadoPosicion
+        dict_estadoPosicion = {}
 
     def datosGenerales(self, codSoc, empresa, usuario, Num_Solp):
         global Cod_Soc, Nom_Soc, Cod_Usuario, Año, Numero_Solp
@@ -95,7 +95,7 @@ class Consultar(QMainWindow):
         sqlcabeceraSOLP='''SELECT b.Descrip_Tip_Solp, c.Descripción_Área, d.Nom_usuario, a.Fecha_Solp, a.Estado_Solp, e.Texto, SUM(f.Cant_Mat_Serv*f.Precio_ref), g.Descrip_moneda FROM TAB_SOLP_001_Cabecera_Solicitud_Pedido a LEFT JOIN `TAB_SOLP_003_Solicitud Pedido` b ON a.Tipo_solp=b.Tipo_Solp LEFT JOIN TAB_SOC_010_Áreas_de_la_empresa c ON a.Area_Solp=c.Cod_Área LEFT JOIN TAB_SOC_005_Usuarios d ON a.Cod_Soc=d.Cod_Soc AND a.Solicita_Solp=d.Cod_usuario LEFT JOIN TAB_SOC_019_Texto_Proceso e ON e.Cod_Soc=a.Cod_Soc AND e.Año=a.Año AND e.Tipo_Proceso='1' AND e.Nro_Doc=a.Nro_Solp AND e.Item_Doc='0' LEFT JOIN TAB_SOLP_002_Detalle_Solicitud_Pedido f ON f.Cod_Soc=a.Cod_Soc AND f.Año=a.Año AND f.Nro_Solp=a.Nro_Solp AND f.Estado_Item!='4' LEFT JOIN TAB_SOC_008_Monedas g ON f.Moneda=g.Cod_moneda WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Nro_Solp='%s' GROUP BY a.Nro_Solp'''%(Cod_Soc, Año, Numero_Solp)
         listcabecera=convlist(sqlcabeceraSOLP)
 
-        sqldetalleSOLP="SELECT a.Estado_Item,a.Item_Solp,a.Cod_Mat,c.Descrip_Mat,c.Uni_Base,k.Descrip_Marca,a.Cant_Mat_Serv,a.Precio_ref,a.Fecha_Requerimiento,d.Nom_Soc_Largo,e.Nomb_Planta,f.Nomb_Alm,g.Nom_usuario,h.Descripción_Área FROM TAB_SOLP_002_Detalle_Solicitud_Pedido a LEFT JOIN TAB_MAT_001_Catalogo_Materiales c ON a.Cod_Mat=c.Cod_Mat LEFT JOIN TAB_SOC_001_Sociedad d ON a.Cod_Soc=d.Cod_soc LEFT JOIN TAB_SOC_002_Planta e ON a.Cod_Soc=e.Cod_soc AND a.Centro=e.Cod_Planta LEFT JOIN TAB_SOC_003_Almacén f ON a.Cod_Soc=f.Cod_Soc AND a.Centro=f.Cod_Planta AND a.Almacen=f.Cod_Alm LEFT JOIN TAB_SOC_005_Usuarios g ON a.Cod_Soc=g.Cod_Soc AND a.Solicitante=g.Cod_usuario LEFT JOIN TAB_SOC_010_Áreas_de_la_empresa h ON a.Area_gestora=h.Cod_Área LEFT JOIN TAB_MAT_010_Marca_de_Producto k ON a.Cod_Mat=c.Cod_Mat AND c.Marca=k.Cod_Marca WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Nro_Solp='%s' ORDER BY a.Item_Solp;" %(Cod_Soc, Año, Numero_Solp)
+        sqldetalleSOLP="SELECT a.Estado_Item,a.Item_Solp,a.Cod_Mat,c.Descrip_Mat,c.Uni_Base,k.Descrip_Marca,a.Cant_Mat_Serv,a.Precio_ref,a.Fecha_Requerimiento,d.Nom_Soc_Largo,e.Nomb_Planta,f.Nomb_Alm,g.Nom_usuario,h.Descripción_Área FROM TAB_SOLP_002_Detalle_Solicitud_Pedido a LEFT JOIN TAB_MAT_001_Catalogo_Materiales c ON a.Cod_Soc=c.Cod_Soc AND a.Cod_Mat=c.Cod_Mat LEFT JOIN TAB_SOC_001_Sociedad d ON a.Cod_Soc=d.Cod_soc LEFT JOIN TAB_SOC_002_Planta e ON a.Cod_Soc=e.Cod_soc AND a.Centro=e.Cod_Planta LEFT JOIN TAB_SOC_003_Almacén f ON a.Cod_Soc=f.Cod_Soc AND a.Centro=f.Cod_Planta AND a.Almacen=f.Cod_Alm LEFT JOIN TAB_SOC_005_Usuarios g ON a.Cod_Soc=g.Cod_Soc AND a.Solicitante=g.Cod_usuario LEFT JOIN TAB_SOC_010_Áreas_de_la_empresa h ON a.Area_gestora=h.Cod_Área LEFT JOIN TAB_MAT_010_Marca_de_Producto k ON a.Cod_Mat=c.Cod_Mat AND c.Marca=k.Cod_Marca WHERE a.Cod_Soc='%s' AND a.Año='%s' AND a.Nro_Solp='%s' ORDER BY a.Item_Solp;" %(Cod_Soc, Año, Numero_Solp)
 
         actualizarSOLP(self,self.tbwRegistro_SOLP,sqldetalleSOLP,estadosDoc,Cod_Soc,Numero_Solp,Año)
 
@@ -138,82 +138,97 @@ class Consultar(QMainWindow):
 
     def Aprobar(self):
         try:
-            Fecha=datetime.now().strftime("%Y-%m-%d")
-            Hora=datetime.now().strftime("%H:%M:%S.%f")
-            Estado_Item=self.tbwRegistro_SOLP.item(self.tbwRegistro_SOLP.currentRow(),0).text()
+            # Fecha=datetime.now().strftime("%Y-%m-%d")
+            # Hora=datetime.now().strftime("%H:%M:%S.%f")
+            estado_Item=self.tbwRegistro_SOLP.item(self.tbwRegistro_SOLP.currentRow(),0).text()
             Item_Solp=self.tbwRegistro_SOLP.item(self.tbwRegistro_SOLP.currentRow(),1).text()
 
-            if len(Estado_Item)!=0:
-                if Estado_Item=="Activo":
+            if len(estado_Item)!=0:
+                if estado_Item!='Aprobado':
                     reply = mensajeDialogo("pregunta", "Pregunta","¿Realmente desea Aprobar Item?")
                     if reply == 'Yes':
-                        Estado_Item=5
-                        sqlAprobar="UPDATE TAB_SOLP_002_Detalle_Solicitud_Pedido SET Estado_Item='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'AND Item_Solp='%s'"%(Estado_Item,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp,Item_Solp)
-                        respuesta=ejecutarSql(sqlAprobar)
-                        if respuesta['respuesta']=='correcto':
-                            mensajeDialogo("informacion", "Informacion", "Item fue Aprobado")
+                        k = Item_Solp
+                        v = '5'
+                        dict_temp = {}
+                        dict_temp.setdefault(k,v)
+                        dict_estadoPosicion.update(dict_temp)
+                        print(dict_estadoPosicion)
+                        # Estado_Item=5
+                        # sqlAprobar="UPDATE TAB_SOLP_002_Detalle_Solicitud_Pedido SET Estado_Item='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'AND Item_Solp='%s'"%(Estado_Item,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp,Item_Solp)
+                        # respuesta=ejecutarSql(sqlAprobar)
+                        # if respuesta['respuesta']=='correcto':
+                        #     mensajeDialogo("informacion", "Informacion", "Item fue Aprobado")
             #--------------------------------------------------
-                            Estado_Item=QTableWidgetItem("Aprobado")
-                            flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-                            Estado_Item.setFlags(flags)
-                            Estado_Item.setTextAlignment(QtCore.Qt.AlignCenter)
-                            brush = QtGui.QBrush(QtGui.QColor(0, 0, 127))
-                            brush.setStyle(QtCore.Qt.SolidPattern)
-                            Estado_Item.setForeground(brush)
-                            self.tbwRegistro_SOLP.setItem(self.tbwRegistro_SOLP.currentRow(),0, Estado_Item)
-                            self.tbwRegistro_SOLP.resizeColumnToContents(0)
-                        elif respuesta['respuesta']=='incorrecto':
-                            mensajeDialogo("error", "Error", "No se pudo Aprobar a Item")
+                        Estado_Item=QTableWidgetItem("Aprobado")
+                        flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                        Estado_Item.setFlags(flags)
+                        Estado_Item.setTextAlignment(QtCore.Qt.AlignCenter)
+                        brush = QtGui.QBrush(QtGui.QColor(0, 0, 127))
+                        brush.setStyle(QtCore.Qt.SolidPattern)
+                        Estado_Item.setForeground(brush)
+                        self.tbwRegistro_SOLP.setItem(self.tbwRegistro_SOLP.currentRow(),0, Estado_Item)
+                        self.tbwRegistro_SOLP.resizeColumnToContents(0)
+                        # elif respuesta['respuesta']=='incorrecto':
+                        #     mensajeDialogo("error", "Error", "No se pudo Aprobar a Item")
 
-                elif Estado_Item=="Aprobado":
+                else:
                     mensajeDialogo("error", "Error", "Item ya fue Aprobado")
-                elif Estado_Item=="Anulado":
-                    mensajeDialogo("error", "Error", "Item Anulado sin acceso a Aprobar")
+                # elif Estado_Item=="Anulado":
+                #     mensajeDialogo("error", "Error", "Item Anulado sin acceso a Aprobar")
 
             else:
                 mensajeDialogo("error", "Error", "Seleccione fila con datos")
-        except:
+
+        except Exception as e:
             mensajeDialogo("error", "Error", "Seleccione una fila")
+            print(e)
 
     def Rechazar(self):
         try:
-            Fecha=datetime.now().strftime("%Y-%m-%d")
-            Hora=datetime.now().strftime("%H:%M:%S.%f")
-            Estado_Item=self.tbwRegistro_SOLP.item(self.tbwRegistro_SOLP.currentRow(),0).text()
+            # Fecha=datetime.now().strftime("%Y-%m-%d")
+            # Hora=datetime.now().strftime("%H:%M:%S.%f")
+            estado_Item=self.tbwRegistro_SOLP.item(self.tbwRegistro_SOLP.currentRow(),0).text()
             Item_Solp=self.tbwRegistro_SOLP.item(self.tbwRegistro_SOLP.currentRow(),1).text()
 
-            if len(Estado_Item)!=0:
-                if Estado_Item=="Activo":
-                    reply = mensajeDialogo("pregunta", "Pregunta","¿Realmente desea Anular Item?")
+            if len(estado_Item)!=0:
+                if estado_Item!='Rechazado':
+                    reply = mensajeDialogo("pregunta", "Pregunta","¿Realmente desea Rechazar el Item?")
                     if reply == 'Yes':
-                        Estado_Item=4
-                        sqlAprobar="UPDATE TAB_SOLP_002_Detalle_Solicitud_Pedido SET Estado_Item='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'AND Item_Solp='%s'"%(Estado_Item,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp,Item_Solp)
-                        respuesta=ejecutarSql(sqlAprobar)
-                        if respuesta['respuesta']=='correcto':
-                            mensajeDialogo("informacion", "Informacion", "Item fue Anulado")
+                        k = Item_Solp
+                        v = '4'
+                        dict_temp = {}
+                        dict_temp.setdefault(k,v)
+                        dict_estadoPosicion.update(dict_temp)
+                        print(dict_estadoPosicion)
+                        # Estado_Item=4
+                        # sqlAprobar="UPDATE TAB_SOLP_002_Detalle_Solicitud_Pedido SET Estado_Item='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'AND Item_Solp='%s'"%(Estado_Item,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp,Item_Solp)
+                        # respuesta=ejecutarSql(sqlAprobar)
+                        # if respuesta['respuesta']=='correcto':
+                        #     mensajeDialogo("informacion", "Informacion", "Item fue Anulado")
             #--------------------------------------------------
-                            Estado_Item=QTableWidgetItem("Anulado")
-                            flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-                            Estado_Item.setFlags(flags)
-                            Estado_Item.setTextAlignment(QtCore.Qt.AlignCenter)
-                            brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
-                            brush.setStyle(QtCore.Qt.SolidPattern)
-                            Estado_Item.setForeground(brush)
-                            self.tbwRegistro_SOLP.setItem(self.tbwRegistro_SOLP.currentRow(),0, Estado_Item)
-                            self.tbwRegistro_SOLP.resizeColumnToContents(0)
-                        elif respuesta['respuesta']=='incorrecto':
-                            mensajeDialogo("error", "Error", "No se pudo Anular a Item")
+                        Estado_Item=QTableWidgetItem("Rechazado")
+                        flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                        Estado_Item.setFlags(flags)
+                        Estado_Item.setTextAlignment(QtCore.Qt.AlignCenter)
+                        brush = QtGui.QBrush(QtGui.QColor(255, 0, 0))
+                        brush.setStyle(QtCore.Qt.SolidPattern)
+                        Estado_Item.setForeground(brush)
+                        self.tbwRegistro_SOLP.setItem(self.tbwRegistro_SOLP.currentRow(),0, Estado_Item)
+                        self.tbwRegistro_SOLP.resizeColumnToContents(0)
+                        # elif respuesta['respuesta']=='incorrecto':
+                        #     mensajeDialogo("error", "Error", "No se pudo Anular a Item")
 
-                elif Estado_Item=="Anulado":
-                    mensajeDialogo("error", "Error", "Item ya fue Anulado")
-                elif Estado_Item=="Aprobado":
-                    mensajeDialogo("error", "Error", "Item Aprobado, sin acceso a Anular")
+                else:
+                    mensajeDialogo("error", "Error", "Item ya fue Rechazado")
+                # elif Estado_Item=="Aprobado":
+                #     mensajeDialogo("error", "Error", "Item Aprobado, sin acceso a Anular")
 
             else:
                 mensajeDialogo("error", "Error", "Seleccione fila con datos")
-        except:
-            mensajeDialogo("error", "Error", "Seleccione una fila")
 
+        except Exception as e:
+            mensajeDialogo("error", "Error", "Seleccione una fila")
+            print(e)
 
     def Grabar(self):
         rows=self.tbwRegistro_SOLP.rowCount()
@@ -224,7 +239,7 @@ class Consultar(QMainWindow):
             lista_estado.append(Estado_Item)
 
         Ap=lista_estado.count('Aprobado')
-        An=lista_estado.count('Anulado')
+        An=lista_estado.count('Rechazado')
 
         if EstadoSolp!='Aprobado'and EstadoSolp!='Anulado':
             Fecha=datetime.now().strftime("%Y-%m-%d")
@@ -233,6 +248,8 @@ class Consultar(QMainWindow):
                 Estado_SOLP=5
                 sqlEstadoSolp="UPDATE TAB_SOLP_001_Cabecera_Solicitud_Pedido SET Estado_Solp='%s',Aprobado_Por='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'"%(Estado_SOLP,Cod_Usuario,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp)
                 respuesta=ejecutarSql(sqlEstadoSolp)
+                sqlAprobar="UPDATE TAB_SOLP_002_Detalle_Solicitud_Pedido SET Estado_Item='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'AND Item_Solp='%s'"%(Estado_Item,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp,Item_Solp)
+                respuesta=ejecutarSql(sqlAprobar)
                 if respuesta['respuesta']=='correcto':
                     mensajeDialogo("informacion", "Informacion", "Requerimiento se grabo correctamente, paso a Estado Aprobado")
                     self.cbEstado_SOLP.setCurrentIndex(4)
