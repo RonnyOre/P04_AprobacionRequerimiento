@@ -16,6 +16,11 @@ class ERP_REQ_P002(QMainWindow):
         QMainWindow.__init__(self)
         uic.loadUi("ERP_PSOLP_003.ui",self)
 
+        global Cod_Soc,Nom_Soc,Cod_Usuario,TipoSolp
+        Cod_Soc='1000'
+        Nom_Soc='MULTICABLE PERU S.A.C.'
+        Cod_Usuario='2021100004'
+
         self.pbSalir.clicked.connect(self.Salir)
         self.cbTipo_SOLP.activated.connect(self.TipoSOLP)
         self.pbCargar.clicked.connect(self.Cargar)
@@ -23,11 +28,11 @@ class ERP_REQ_P002(QMainWindow):
         self.deFinal.setDateTime(QtCore.QDateTime.currentDateTime())
         self.deFinal.dateChanged.connect(self.Fecha_Final)
 
-    def datosGenerales(self, codSoc, empresa, usuario):
-        global Cod_Soc, Nom_Soc, Cod_Usuario,TipoSolp
-        Cod_Soc = codSoc
-        Nom_Soc = empresa
-        Cod_Usuario = usuario
+    # def datosGenerales(self, codSoc, empresa, usuario):
+    #     global Cod_Soc, Nom_Soc, Cod_Usuario,TipoSolp
+    #     Cod_Soc = codSoc
+    #     Nom_Soc = empresa
+    #     Cod_Usuario = usuario
 
         cargarLogo(self.lbLogo_Mp,'multiplay')
         cargarLogo(self.lbLogo_Soc, Cod_Soc)
