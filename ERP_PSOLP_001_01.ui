@@ -363,8 +363,8 @@ color: rgb(0, 0, 0);</string>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>17</width>
-        <height>743</height>
+        <width>20</width>
+        <height>40</height>
        </size>
       </property>
      </spacer>
@@ -376,7 +376,7 @@ color: rgb(0, 0, 0);</string>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>1229</width>
+        <width>40</width>
         <height>20</height>
        </size>
       </property>
@@ -389,8 +389,8 @@ color: rgb(0, 0, 0);</string>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>17</width>
-        <height>743</height>
+        <width>20</width>
+        <height>40</height>
        </size>
       </property>
      </spacer>
@@ -491,7 +491,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>1229</width>
+        <width>40</width>
         <height>20</height>
        </size>
       </property>
@@ -504,7 +504,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>1229</width>
+        <width>40</width>
         <height>20</height>
        </size>
       </property>
@@ -517,7 +517,7 @@ background-color: rgba(255, 255, 255, 0);</string>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>1229</width>
+        <width>40</width>
         <height>20</height>
        </size>
       </property>
@@ -544,7 +544,7 @@ font: 75 12pt &quot;MS Shell Dlg 2&quot;;</string>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>238</width>
+          <width>40</width>
           <height>20</height>
          </size>
         </property>
@@ -566,7 +566,7 @@ font: 75 12pt &quot;MS Shell Dlg 2&quot;;</string>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>1229</width>
+        <width>40</width>
         <height>20</height>
        </size>
       </property>
@@ -612,7 +612,7 @@ color: rgb(0, 0, 0);</string>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>1229</width>
+        <width>40</width>
         <height>20</height>
        </size>
       </property>
@@ -991,8 +991,8 @@ background-color: rgb(255, 213, 79);</string>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>1229</width>
-        <height>17</height>
+        <width>40</width>
+        <height>20</height>
        </size>
       </property>
      </spacer>
@@ -1027,11 +1027,6 @@ QTableWidget
       <attribute name="verticalHeaderVisible">
        <bool>false</bool>
       </attribute>
-      <row>
-       <property name="text">
-        <string/>
-       </property>
-      </row>
       <column>
        <property name="text">
         <string>Estado</string>
@@ -1212,37 +1207,6 @@ QTableWidget
         </font>
        </property>
       </column>
-      <item row="0" column="1">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="textAlignment">
-        <set>AlignCenter</set>
-       </property>
-       <property name="background">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>85</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </property>
-      </item>
-      <item row="0" column="3">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="background">
-        <brush brushstyle="SolidPattern">
-         <color alpha="255">
-          <red>85</red>
-          <green>255</green>
-          <blue>255</blue>
-         </color>
-        </brush>
-       </property>
-      </item>
      </widget>
     </item>
    </layout>

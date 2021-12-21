@@ -16,29 +16,32 @@ class ERP_REQ_P002(QMainWindow):
         QMainWindow.__init__(self)
         uic.loadUi("ERP_PSOLP_003.ui",self)
 
-        global Cod_Soc,Nom_Soc,Cod_Usuario,TipoSolp
-        Cod_Soc='2000'
-        Nom_Soc='MULTICABLE PERU S.A.C.'
-        Cod_Usuario='2021100004'
+        # global Cod_Soc,Nom_Soc,Cod_Usuario,TipoSolp
+        # Cod_Soc='2000'
+        # Nom_Soc='MULTICABLE PERU S.A.C.'
+        # Cod_Usuario='2021100004'
 
         self.pbSalir.clicked.connect(self.Salir)
         self.cbTipo_SOLP.activated.connect(self.TipoSOLP)
         self.pbCargar.clicked.connect(self.Cargar)
+        self.pbLimpiar.clicked.connect(self.Limpiar)
+        self.deInicial.setDateTime(QtCore.QDateTime.currentDateTime())
         self.deInicial.dateChanged.connect(self.Fecha_Inicial)
         self.deFinal.setDateTime(QtCore.QDateTime.currentDateTime())
         self.deFinal.dateChanged.connect(self.Fecha_Final)
 
-    # def datosGenerales(self, codSoc, empresa, usuario):
-    #     global Cod_Soc, Nom_Soc, Cod_Usuario,TipoSolp
-    #     Cod_Soc = codSoc
-    #     Nom_Soc = empresa
-    #     Cod_Usuario = usuario
+    def datosGenerales(self, codSoc, empresa, usuario):
+        global Cod_Soc, Nom_Soc, Cod_Usuario,TipoSolp
+        Cod_Soc = codSoc
+        Nom_Soc = empresa
+        Cod_Usuario = usuario
 
         cargarLogo(self.lbLogo_Mp,'multiplay')
         cargarLogo(self.lbLogo_Soc, Cod_Soc)
         cargarIcono(self, 'erp')
         cargarIcono(self.pbSalir, 'salir')
         cargarIcono(self.pbCargar, 'cargar')
+        cargarIcono(self.pbLimpiar, 'nuevo')
 
         #Diccionario tipos de documento
         Tipo_Solp=consultarSql(sqlTipo_Solp)
@@ -48,6 +51,9 @@ class ERP_REQ_P002(QMainWindow):
 
         insertarDatos(self.cbTipo_SOLP,Tipo_Solp)
         self.cbTipo_SOLP.setCurrentIndex(-1)
+
+        self.leInicial.setReadOnly(True)
+        self.leFinal.setReadOnly(True)
 
     def TipoSOLP(self):
         self.leInicial.clear()
@@ -145,19 +151,37 @@ class ERP_REQ_P002(QMainWindow):
 
         except Exception as e:
             mensajeDialogo("error", "Error", "No se selecciono ningun rango, verifique")
-            self.leInicial.clear()
-            self.leFinal.clear()
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
+
+    def Limpiar(self):
+        try:
             self.cbNro_Inicial.setCurrentIndex(-1)
             self.cbNro_Final.setCurrentIndex(-1)
-            print(e)
+            self.leInicial.clear()
+            self.leFinal.clear()
 
+            self.tbwSolicitud_Pedido_Autorizar.clearContents()
+            rows=self.tbwSolicitud_Pedido_Autorizar.rowCount()
+            for r in range(rows):
+                self.tbwSolicitud_Pedido_Autorizar.removeRow(0)
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def Consultar(self):
-        Num_Solp=self.tbwSolicitud_Pedido_Autorizar.item(self.tbwSolicitud_Pedido_Autorizar.currentRow(),0).text()
-        self.co=Consultar()
-        self.co.datosGenerales(Cod_Soc, Nom_Soc, Cod_Usuario, Num_Solp)
-        self.co.pbGrabar.clicked.connect(self.Cargar)
-        self.co.showMaximized()
+        try:
+            Num_Solp=self.tbwSolicitud_Pedido_Autorizar.item(self.tbwSolicitud_Pedido_Autorizar.currentRow(),0).text()
+            self.co=Consultar()
+            self.co.datosGenerales(Cod_Soc, Nom_Soc, Cod_Usuario, Num_Solp)
+            self.co.pbGrabar.clicked.connect(self.Cargar)
+            self.co.showMaximized()
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def Salir(self):
         self.close()

@@ -200,7 +200,9 @@ class Consultar(QMainWindow):
 
         except Exception as e:
             mensajeDialogo("error", "Error", "Seleccione una fila")
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def Rechazar(self):
         try:
@@ -247,59 +249,64 @@ class Consultar(QMainWindow):
 
         except Exception as e:
             mensajeDialogo("error", "Error", "Seleccione una fila")
-            print(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def Grabar(self):
         try:
-            print(dict_estadoPosicion)
-            rows=self.tbwRegistro_SOLP.rowCount()
-            EstadoSolp=self.cbEstado_SOLP.currentText()
-            lista_estado=[]
-            for row in range(rows):
-                Estado_Item=self.tbwRegistro_SOLP.item(row,0).text()
-                lista_estado.append(Estado_Item)
+            resultado=mensajeDialogo("pregunta", "Grabar", "¿Seguro que desea grabar el requerimiento?\n\nUna vez grabado no se podrá visualizar nuevamente")
+            if resultado=='Yes':
+                rows=self.tbwRegistro_SOLP.rowCount()
+                EstadoSolp=self.cbEstado_SOLP.currentText()
+                lista_estado=[]
+                for row in range(rows):
+                    Estado_Item=self.tbwRegistro_SOLP.item(row,0).text()
+                    lista_estado.append(Estado_Item)
 
-            Ap=lista_estado.count('Aprobado')
-            An=lista_estado.count('Rechazado')
+                Ap=lista_estado.count('Aprobado')
+                An=lista_estado.count('Rechazado')
 
-            if EstadoSolp!='Aprobado'and EstadoSolp!='Anulado':
-                Fecha=datetime.now().strftime("%Y-%m-%d")
-                Hora=datetime.now().strftime("%H:%M:%S.%f")
-                if Ap!=0:
-                    Estado_SOLP=5
-                    sqlEstadoSolp="UPDATE TAB_SOLP_001_Cabecera_Solicitud_Pedido SET Estado_Solp='%s',Aprobado_Por='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'"%(Estado_SOLP,Cod_Usuario,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp)
-                    respuesta=ejecutarSql(sqlEstadoSolp)
-                    for k,v in dict_estadoPosicion.items():
-                        Estado_Item=v
-                        Item_Solp=k
-                        sqlAprobar="UPDATE TAB_SOLP_002_Detalle_Solicitud_Pedido SET Estado_Item='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'AND Item_Solp='%s'"%(Estado_Item,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp,Item_Solp)
-                        respuesta=ejecutarSql(sqlAprobar)
-                    if respuesta['respuesta']=='correcto':
-                        mensajeDialogo("informacion", "Informacion", "Requerimiento se grabo correctamente, paso a Estado Aprobado")
-                        self.cbEstado_SOLP.setCurrentIndex(4)
-                    elif respuesta['respuesta']=='incorrecto':
-                        mensajeDialogo("error", "Error", "Requerimiento no cambio de Estado")
+                if EstadoSolp!='Aprobado'and EstadoSolp!='Anulado':
+                    Fecha=datetime.now().strftime("%Y-%m-%d")
+                    Hora=datetime.now().strftime("%H:%M:%S.%f")
+                    if Ap!=0:
+                        Estado_SOLP=5
+                        sqlEstadoSolp="UPDATE TAB_SOLP_001_Cabecera_Solicitud_Pedido SET Estado_Solp='%s',Aprobado_Por='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'"%(Estado_SOLP,Cod_Usuario,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp)
+                        respuesta=ejecutarSql(sqlEstadoSolp)
+                        for k,v in dict_estadoPosicion.items():
+                            Estado_Item=v
+                            Item_Solp=k
+                            sqlAprobar="UPDATE TAB_SOLP_002_Detalle_Solicitud_Pedido SET Estado_Item='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'AND Item_Solp='%s'"%(Estado_Item,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp,Item_Solp)
+                            respuesta=ejecutarSql(sqlAprobar)
+                        if respuesta['respuesta']=='correcto':
+                            self.cbEstado_SOLP.setCurrentIndex(4)
+                            mensajeDialogo("informacion", "Informacion", "El Requerimiento se grabo correctamente.\nCambio a Estado Aprobado")
+                            self.close()
+                        elif respuesta['respuesta']=='incorrecto':
+                            mensajeDialogo("error", "Error", "El Requerimiento no cambio de Estado")
 
-                elif An==rows:
-                    Estado_SOLP=4
-                    sqlEstadoSolp="UPDATE TAB_SOLP_001_Cabecera_Solicitud_Pedido SET Estado_Solp='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'"%(Estado_SOLP,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp)
-                    respuesta=ejecutarSql(sqlEstadoSolp)
-                    for k,v in dict_estadoPosicion.items():
-                        Estado_Item=v
-                        Item_Solp=k
-                        sqlAprobar="UPDATE TAB_SOLP_002_Detalle_Solicitud_Pedido SET Estado_Item='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'AND Item_Solp='%s'"%(Estado_Item,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp,Item_Solp)
-                        respuesta=ejecutarSql(sqlAprobar)
-                    if respuesta['respuesta']=='correcto':
-                        mensajeDialogo("informacion", "Informacion", "Requerimiento se grabo correctamente, paso a Estado Anulado")
-                        self.cbEstado_SOLP.setCurrentIndex(3)
-                    elif respuesta['respuesta']=='incorrecto':
-                        mensajeDialogo("error", "Error", "Requerimiento no cambio de Estado")
+                    elif An==rows:
+                        Estado_SOLP=4
+                        sqlEstadoSolp="UPDATE TAB_SOLP_001_Cabecera_Solicitud_Pedido SET Estado_Solp='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'"%(Estado_SOLP,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp)
+                        respuesta=ejecutarSql(sqlEstadoSolp)
+                        for k,v in dict_estadoPosicion.items():
+                            Estado_Item=v
+                            Item_Solp=k
+                            sqlAprobar="UPDATE TAB_SOLP_002_Detalle_Solicitud_Pedido SET Estado_Item='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'AND Item_Solp='%s'"%(Estado_Item,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp,Item_Solp)
+                            respuesta=ejecutarSql(sqlAprobar)
+                        if respuesta['respuesta']=='correcto':
+                            self.cbEstado_SOLP.setCurrentIndex(3)
+                            mensajeDialogo("informacion", "Informacion", "El Requerimiento se grabo correctamente.\nCambio a Estado Anulado")
+                            self.close()
+                        elif respuesta['respuesta']=='incorrecto':
+                            mensajeDialogo("error", "Error", "El Requerimiento no cambio de Estado")
+
+                    else:
+                        mensajeDialogo("error", "Error", "Para Grabar Apruebe o Rechace uno o mas Items")
 
                 else:
-                    mensajeDialogo("error", "Error", "Para Grabar Apruebe o Rechace uno o mas Items")
-
-            else:
-                mensajeDialogo("error", "Error", "Requerimiento ya fue grabado")
+                    mensajeDialogo("error", "Error", "El Requerimiento ya fue grabado")
 
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -314,8 +321,11 @@ class Consultar(QMainWindow):
             TextoPosicion(NroSolPedido,Item_Solp).exec_()
             actualizarboton(self,self.tbwRegistro_SOLP,Cod_Soc,Año,Numero_Solp,Item_Solp,fila)
 
-        except:
+        except Exception as e:
             mensajeDialogo("error", "Error", "Complete los Campos")
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
 class TextoPosicion(QDialog):
     def __init__(self,NroSolPedido,Item_Solp):

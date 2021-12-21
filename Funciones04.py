@@ -1037,11 +1037,11 @@ def consultaRucMigo(mostrar, RUC):
 
 def Cargar(self,tw,sql,Inicio,Final,Fec_Inicial,Fec_Final,Cod_Soc,Año):
     tw.clearContents()
+    rows=tw.rowCount()
+    for r in range(rows):
+        tw.removeRow(0)
     informacion=consultarSql(sql)
     if informacion!=[]:
-        rows=tw.rowCount()
-        for r in range(rows):
-            tw.removeRow(0)
         flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         row=0
         for fila in informacion:
@@ -1075,18 +1075,14 @@ def Cargar(self,tw,sql,Inicio,Final,Fec_Inicial,Fec_Final,Cod_Soc,Año):
             row+=1
     else:
         mensajeDialogo("informacion", "Informacion","No se encontraron solicitudes de pedido en este rango")
-        Inicio.setCurrentIndex(-1)
-        Final.setCurrentIndex(-1)
-        Fec_Inicial.clear()
-        Fec_Final.clear()
 
 def actualizarSOLP(self,tw,sql,Estado_Doc,Cod_Soc,NroSOLP,Año):
     tw.clearContents()
+    rows=tw.rowCount()
+    for r in range(rows):
+        tw.removeRow(0)
     informacion=consultarSql(sql)
     if informacion!=[]:
-        rows=tw.rowCount()
-        for r in range(rows):
-            tw.removeRow(0)
         flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         row=0
         for fila in informacion:
