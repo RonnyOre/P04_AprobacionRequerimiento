@@ -1,7 +1,7 @@
 import sys
 from datetime import datetime
 from Funciones04 import *
-from PyQt5 import uic, QtCore
+from PyQt5 import uic, QtCore, QtGui
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 import urllib.request
@@ -250,46 +250,61 @@ class Consultar(QMainWindow):
             print(e)
 
     def Grabar(self):
-        rows=self.tbwRegistro_SOLP.rowCount()
-        EstadoSolp=self.cbEstado_SOLP.currentText()
-        lista_estado=[]
-        for row in range(rows):
-            Estado_Item=self.tbwRegistro_SOLP.item(row,0).text()
-            lista_estado.append(Estado_Item)
+        try:
+            print(dict_estadoPosicion)
+            rows=self.tbwRegistro_SOLP.rowCount()
+            EstadoSolp=self.cbEstado_SOLP.currentText()
+            lista_estado=[]
+            for row in range(rows):
+                Estado_Item=self.tbwRegistro_SOLP.item(row,0).text()
+                lista_estado.append(Estado_Item)
 
-        Ap=lista_estado.count('Aprobado')
-        An=lista_estado.count('Rechazado')
+            Ap=lista_estado.count('Aprobado')
+            An=lista_estado.count('Rechazado')
 
-        if EstadoSolp!='Aprobado'and EstadoSolp!='Anulado':
-            Fecha=datetime.now().strftime("%Y-%m-%d")
-            Hora=datetime.now().strftime("%H:%M:%S.%f")
-            if Ap!=0:
-                Estado_SOLP=5
-                sqlEstadoSolp="UPDATE TAB_SOLP_001_Cabecera_Solicitud_Pedido SET Estado_Solp='%s',Aprobado_Por='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'"%(Estado_SOLP,Cod_Usuario,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp)
-                respuesta=ejecutarSql(sqlEstadoSolp)
-                sqlAprobar="UPDATE TAB_SOLP_002_Detalle_Solicitud_Pedido SET Estado_Item='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'AND Item_Solp='%s'"%(Estado_Item,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp,Item_Solp)
-                respuesta=ejecutarSql(sqlAprobar)
-                if respuesta['respuesta']=='correcto':
-                    mensajeDialogo("informacion", "Informacion", "Requerimiento se grabo correctamente, paso a Estado Aprobado")
-                    self.cbEstado_SOLP.setCurrentIndex(4)
-                elif respuesta['respuesta']=='incorrecto':
-                    mensajeDialogo("error", "Error", "Requerimiento no cambio de Estado")
+            if EstadoSolp!='Aprobado'and EstadoSolp!='Anulado':
+                Fecha=datetime.now().strftime("%Y-%m-%d")
+                Hora=datetime.now().strftime("%H:%M:%S.%f")
+                if Ap!=0:
+                    Estado_SOLP=5
+                    sqlEstadoSolp="UPDATE TAB_SOLP_001_Cabecera_Solicitud_Pedido SET Estado_Solp='%s',Aprobado_Por='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'"%(Estado_SOLP,Cod_Usuario,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp)
+                    respuesta=ejecutarSql(sqlEstadoSolp)
+                    for k,v in dict_estadoPosicion.items():
+                        Estado_Item=v
+                        Item_Solp=k
+                        sqlAprobar="UPDATE TAB_SOLP_002_Detalle_Solicitud_Pedido SET Estado_Item='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'AND Item_Solp='%s'"%(Estado_Item,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp,Item_Solp)
+                        respuesta=ejecutarSql(sqlAprobar)
+                    if respuesta['respuesta']=='correcto':
+                        mensajeDialogo("informacion", "Informacion", "Requerimiento se grabo correctamente, paso a Estado Aprobado")
+                        self.cbEstado_SOLP.setCurrentIndex(4)
+                    elif respuesta['respuesta']=='incorrecto':
+                        mensajeDialogo("error", "Error", "Requerimiento no cambio de Estado")
 
-            elif An==rows:
-                Estado_SOLP=4
-                sqlEstadoSolp="UPDATE TAB_SOLP_001_Cabecera_Solicitud_Pedido SET Estado_Solp='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'"%(Estado_SOLP,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp)
-                respuesta=ejecutarSql(sqlEstadoSolp)
-                if respuesta['respuesta']=='correcto':
-                    mensajeDialogo("informacion", "Informacion", "Requerimiento se grabo correctamente, paso a Estado Anulado")
-                    self.cbEstado_SOLP.setCurrentIndex(3)
-                elif respuesta['respuesta']=='incorrecto':
-                    mensajeDialogo("error", "Error", "Requerimiento no cambio de Estado")
+                elif An==rows:
+                    Estado_SOLP=4
+                    sqlEstadoSolp="UPDATE TAB_SOLP_001_Cabecera_Solicitud_Pedido SET Estado_Solp='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'"%(Estado_SOLP,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp)
+                    respuesta=ejecutarSql(sqlEstadoSolp)
+                    for k,v in dict_estadoPosicion.items():
+                        Estado_Item=v
+                        Item_Solp=k
+                        sqlAprobar="UPDATE TAB_SOLP_002_Detalle_Solicitud_Pedido SET Estado_Item='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s'AND Año='%s'AND Nro_Solp='%s'AND Item_Solp='%s'"%(Estado_Item,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,Numero_Solp,Item_Solp)
+                        respuesta=ejecutarSql(sqlAprobar)
+                    if respuesta['respuesta']=='correcto':
+                        mensajeDialogo("informacion", "Informacion", "Requerimiento se grabo correctamente, paso a Estado Anulado")
+                        self.cbEstado_SOLP.setCurrentIndex(3)
+                    elif respuesta['respuesta']=='incorrecto':
+                        mensajeDialogo("error", "Error", "Requerimiento no cambio de Estado")
+
+                else:
+                    mensajeDialogo("error", "Error", "Para Grabar Apruebe o Rechace uno o mas Items")
 
             else:
-                mensajeDialogo("error", "Error", "Para Grabar Apruebe o Rechace uno o mas Items")
+                mensajeDialogo("error", "Error", "Requerimiento ya fue grabado")
 
-        else:
-            mensajeDialogo("error", "Error", "Requerimiento ya fue grabado")
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def TextoPosicion(self):
         try:
@@ -331,40 +346,45 @@ class TextoPosicion(QDialog):
         cargarIcono(self.pbModificarDetalle,'modificar')
 
     def Grabar(self):
+        try:
+            Texto=self.teDetalle.toPlainText()
+            if len(Texto)!=0:
+                Fecha=datetime.now().strftime("%Y-%m-%d")
+                Hora=datetime.now().strftime("%H:%M:%S.%f")
 
-        Texto=self.teDetalle.toPlainText()
-        if len(Texto)!=0:
-            Fecha=datetime.now().strftime("%Y-%m-%d")
-            Hora=datetime.now().strftime("%H:%M:%S.%f")
+                sqlTex="SELECT Texto FROM TAB_SOC_019_Texto_Proceso WHERE Cod_Soc='%s'AND Año='%s' AND Tipo_Proceso='1' AND Nro_Doc='%s' AND Item_Doc='%s'"%(Cod_Soc,Año,NroDoc,ItemDoc)
+                tex= consultarSql(sqlTex)
 
-            sqlTex="SELECT Texto FROM TAB_SOC_019_Texto_Proceso WHERE Cod_Soc='%s'AND Año='%s' AND Tipo_Proceso='1' AND Nro_Doc='%s' AND Item_Doc='%s'"%(Cod_Soc,Año,NroDoc,ItemDoc)
-            tex= consultarSql(sqlTex)
+                if tex==[]:
+                    sqlTexto="INSERT INTO TAB_SOC_019_Texto_Proceso(Cod_Soc, Año, Tipo_Proceso, Nro_Doc, Item_Doc, Texto, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(Cod_Soc,Año,1,NroDoc,ItemDoc,Texto,Fecha,Hora,Cod_Usuario)
+                    respuesta=ejecutarSql(sqlTexto)
+                    if respuesta['respuesta']=='correcto':
+                        mensajeDialogo("informacion", "Informacion", "Texto grabado con éxito")
+                        self.pbGrabarDetalle.setEnabled(False)
+                        self.pbModificarDetalle.setEnabled(True)
+                        self.teDetalle.setEnabled(False)
 
-            if tex==[]:
-                sqlTexto="INSERT INTO TAB_SOC_019_Texto_Proceso(Cod_Soc, Año, Tipo_Proceso, Nro_Doc, Item_Doc, Texto, Fecha_Reg, Hora_Reg, Usuario_Reg) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')"%(Cod_Soc,Año,1,NroDoc,ItemDoc,Texto,Fecha,Hora,Cod_Usuario)
-                respuesta=ejecutarSql(sqlTexto)
-                if respuesta['respuesta']=='correcto':
-                    mensajeDialogo("informacion", "Informacion", "Texto grabado con éxito")
-                    self.pbGrabarDetalle.setEnabled(False)
-                    self.pbModificarDetalle.setEnabled(True)
-                    self.teDetalle.setEnabled(False)
+                    elif respuesta['respuesta']=='incorrecto':
+                        mensajeDialogo("error", "Error", "El Texto no se pudo grabar")
 
-                elif respuesta['respuesta']=='incorrecto':
-                    mensajeDialogo("error", "Error", "El Texto no se pudo grabar")
+                elif tex!=[]:
+                    sqlTexto="UPDATE TAB_SOC_019_Texto_Proceso SET Texto='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Año='%s' AND Tipo_Proceso='1' AND Nro_Doc='%s' AND Item_Doc='%s' "%(Texto,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,NroDoc,ItemDoc)
+                    respuesta=ejecutarSql(sqlTexto)
+                    if respuesta['respuesta']=='correcto':
+                        mensajeDialogo("informacion", "Informacion", "Texto modificado con éxito")
+                        self.pbGrabarDetalle.setEnabled(False)
+                        self.pbModificarDetalle.setEnabled(True)
+                        self.teDetalle.setEnabled(False)
+                    elif respuesta['respuesta']=='incorrecto':
+                        mensajeDialogo("error", "Error", "El Texto no se pudo modificar")
 
-            elif tex!=[]:
-                sqlTexto="UPDATE TAB_SOC_019_Texto_Proceso SET Texto='%s',Fecha_Mod='%s',Hora_Mod='%s',Usuario_Mod='%s' WHERE Cod_Soc='%s' AND Año='%s' AND Tipo_Proceso='1' AND Nro_Doc='%s' AND Item_Doc='%s' "%(Texto,Fecha,Hora,Cod_Usuario,Cod_Soc,Año,NroDoc,ItemDoc)
-                respuesta=ejecutarSql(sqlTexto)
-                if respuesta['respuesta']=='correcto':
-                    mensajeDialogo("informacion", "Informacion", "Texto modificado con éxito")
-                    self.pbGrabarDetalle.setEnabled(False)
-                    self.pbModificarDetalle.setEnabled(True)
-                    self.teDetalle.setEnabled(False)
-                elif respuesta['respuesta']=='incorrecto':
-                    mensajeDialogo("error", "Error", "El Texto no se pudo modificar")
+            else:
+                mensajeDialogo("error", "Error", "¡No se puede Grabar texto vacio!")
 
-        else:
-            mensajeDialogo("error", "Error", "¡No se puede Grabar texto vacio!")
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(fname, exc_tb.tb_lineno, exc_type, e)
 
     def Modificar(self):
         self.teDetalle.setEnabled(True)

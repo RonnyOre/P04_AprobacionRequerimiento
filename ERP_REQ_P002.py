@@ -17,7 +17,7 @@ class ERP_REQ_P002(QMainWindow):
         uic.loadUi("ERP_PSOLP_003.ui",self)
 
         global Cod_Soc,Nom_Soc,Cod_Usuario,TipoSolp
-        Cod_Soc='1000'
+        Cod_Soc='2000'
         Nom_Soc='MULTICABLE PERU S.A.C.'
         Cod_Usuario='2021100004'
 
