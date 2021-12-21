@@ -148,6 +148,18 @@ def buscarTabla(tw, texto, columnas):
     except Exception as e:
         mensajeDialogo("error", "buscarTabla", e)
 
+def insertarFila(col,item,Derecha,Izquierda,Centro):
+    try:
+
+        if col in Derecha:
+            item.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        if col in Izquierda:
+            item.setTextAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        if col in Centro:
+            item.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+    except:
+        item.setTextAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+
 def formatearFecha(fecha):
     if fecha=="":
         return ""
@@ -1029,7 +1041,7 @@ def Cargar(self,tw,sql,Inicio,Final,Fec_Inicial,Fec_Final,Cod_Soc,Año):
     if informacion!=[]:
         rows=tw.rowCount()
         for r in range(rows):
-            tw.removeRow(1)
+            tw.removeRow(0)
         flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         row=0
         for fila in informacion:
@@ -1040,10 +1052,11 @@ def Cargar(self,tw,sql,Inicio,Final,Fec_Inicial,Fec_Final,Cod_Soc,Año):
             for i in fila:
                 item=QTableWidgetItem(i)
                 item.setFlags(flags)
+                insertarFila(col,item,[5],[3,4],[0,1,2])
                 if tw.rowCount()<=row:
                     tw.insertRow(tw.rowCount())
                 tw.setItem(row,col, item)
-                item.setTextAlignment(QtCore.Qt.AlignCenter)
+                # item.setTextAlignment(QtCore.Qt.AlignCenter)
                 tw.resizeColumnToContents(3)
                 tw.resizeColumnToContents(4)
                 col += 1
@@ -1073,7 +1086,7 @@ def actualizarSOLP(self,tw,sql,Estado_Doc,Cod_Soc,NroSOLP,Año):
     if informacion!=[]:
         rows=tw.rowCount()
         for r in range(rows):
-            tw.removeRow(1)
+            tw.removeRow(0)
         flags = (QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
         row=0
         for fila in informacion:
@@ -1125,7 +1138,7 @@ def actualizarSOLP(self,tw,sql,Estado_Doc,Cod_Soc,NroSOLP,Año):
             for i in material:
                 item=QTableWidgetItem(i)
                 item.setFlags(flags)
-                item.setTextAlignment(QtCore.Qt.AlignCenter)
+                insertarFila(col,item,[6,7],[3,5,9],[4,8])
                 if tw.rowCount()<=row:
                     tw.insertRow(tw.rowCount())
                 tw.setItem(row, col, item)

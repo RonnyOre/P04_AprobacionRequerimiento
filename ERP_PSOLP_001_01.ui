@@ -1012,6 +1012,9 @@ QTableWidget
 {background-color: rgba(255, 255, 255, 0);}
 </string>
       </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
       <attribute name="horizontalHeaderDefaultSectionSize">
        <number>150</number>
       </attribute>

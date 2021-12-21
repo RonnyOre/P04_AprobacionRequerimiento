@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1404</width>
-    <height>746</height>
+    <width>1392</width>
+    <height>592</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -786,6 +786,9 @@ QTableWidget
 
 {background-color: rgba(255, 255, 255, 0);}</string>
         </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
         <property name="showGrid">
          <bool>true</bool>
         </property>
@@ -1020,7 +1023,7 @@ QTableWidget
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1404</width>
+     <width>1392</width>
      <height>21</height>
     </rect>
    </property>
